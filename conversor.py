@@ -67,16 +67,25 @@ if uploaded_files:
                 f"⏳ Progresso: {int(progress * 100)}% | Tempo estimado restante: {int(remaining_time)} segundos"
             )
 
+        # Verificar se os arquivos foram realmente gerados
+        st.subheader("📂 Arquivos convertidos gerados:")
+        converted_files = os.listdir(output_dir)
+        if not converted_files:
+            st.error("❌ Nenhum arquivo convertido foi encontrado. Verifique se a conversão foi feita corretamente.")
+            st.stop()
+
+        for file in converted_files:
+            st.code(file)
+
         # Compacta os arquivos convertidos
         zip_path = "arquivos_convertidos.zip"
         with zipfile.ZipFile(zip_path, "w") as zipf:
-            for file in os.listdir(output_dir):
+            for file in converted_files:
                 full_path = os.path.join(output_dir, file)
                 zipf.write(full_path, arcname=file)
 
-        # Confirma que o arquivo foi criado
+        # Garante leitura correta do zip
         if os.path.exists(zip_path):
-            time.sleep(1)  # garante que o sistema finalize o zip antes de abrir
             with open(zip_path, "rb") as f:
                 zip_bytes = f.read()
                 st.success("✅ Conversão finalizada!")
@@ -87,4 +96,4 @@ if uploaded_files:
                     mime="application/zip"
                 )
         else:
-            st.error("❌ O arquivo .zip não foi gerado. Tente novamente.")
+            st.error("❌ O arquivo ZIP não foi encontrado.")
