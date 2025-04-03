@@ -74,12 +74,17 @@ if uploaded_files:
                 full_path = os.path.join(output_dir, file)
                 zipf.write(full_path, arcname=file)
 
-        # Download final
-        with open(zip_path, "rb") as f:
-            st.success("✅ Conversão finalizada!")
-            st.download_button(
-                label="📦 Baixar arquivos convertidos (ZIP)",
-                data=f,
-                file_name="arquivos_convertidos.zip",
-                mime="application/zip"
-            )
+        # Confirma que o arquivo foi criado
+        if os.path.exists(zip_path):
+            time.sleep(1)  # garante que o sistema finalize o zip antes de abrir
+            with open(zip_path, "rb") as f:
+                zip_bytes = f.read()
+                st.success("✅ Conversão finalizada!")
+                st.download_button(
+                    label="📦 Baixar arquivos convertidos (ZIP)",
+                    data=zip_bytes,
+                    file_name="arquivos_convertidos.zip",
+                    mime="application/zip"
+                )
+        else:
+            st.error("❌ O arquivo .zip não foi gerado. Tente novamente.")
